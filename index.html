@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMI 🌱 — Discover Earth with Lumi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Nunito for ultra cute typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'lumi-green': '#38EF7D',
+                        'lumi-neon': '#72FD9A',
+                        'lumi-mint': '#E6FCF0',
+                        'lumi-darkgreen': '#1E5235',
+                        'lumi-cream': '#FFFAF0',
+                        'lumi-yellow': '#FFF2AC',
+                        'lumi-pink': '#FFD1DC',
+                        'lumi-blue': '#E0F2FE',
+                        'lumi-softbg': '#F3FBF5',
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft-glow': '0 10px 30px -5px rgba(56, 239, 125, 0.35)',
+                        'cute-card': '0 12px 28px -6px rgba(30, 82, 53, 0.08), 0 4px 12px rgba(0,0,0,0.03)',
+                        'float-btn': '0 8px 20px -2px rgba(56, 239, 125, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #F3FBF5;
+            color: #2D4030;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Perspective & Card Flip */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        .flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Ambient floating objects */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        @keyframes float-medium {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(-4deg); }
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(4deg); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(114, 253, 154, 0.6)); }
+            50% { filter: drop-shadow(0 0 22px rgba(114, 253, 154, 0.95)); }
+        }
+
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes sound-bar {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+
+        .animate-float-slow { animation: float-slow 4s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+        .animate-sway { animation: sway 3s ease-in-out infinite; transform-origin: bottom center; }
+        .animate-pulse-glow { animation: pulse-glow 3s infinite; }
+        .animate-bounce-gentle { animation: bounce-gentle 2s ease-in-out infinite; }
+
+        .sound-wave-bar {
+            width: 3px;
+            background-color: #1E5235;
+            border-radius: 99px;
+            display: inline-block;
+            animation: sound-bar 0.6s ease-in-out infinite alternate;
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E6FCF0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #72FD9A;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38EF7D;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between">
+
+    <div id="ambient-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <!-- Clouds -->
+        <div class="absolute top-8 left-10 opacity-40 text-4xl animate-float-slow">☁️</div>
+        <div class="absolute top-20 right-16 opacity-30 text-5xl animate-float-medium" style="animation-delay: 1.5s;">☁️</div>
+        <div class="absolute top-64 left-1/3 opacity-25 text-3xl animate-float-slow" style="animation-delay: 2.8s;">☁️</div>
+
+        <!-- Floating Nature Particles -->
+        <div class="absolute top-1/4 left-8 text-2xl opacity-60 animate-float-medium">🍃</div>
+        <div class="absolute top-1/3 right-12 text-2xl opacity-60 animate-float-slow" style="animation-delay: 1s;">🦋</div>
+        <div class="absolute top-1/2 left-16 text-xl opacity-50 animate-float-slow" style="animation-delay: 2s;">🌸</div>
+        <div class="absolute top-2/3 right-20 text-2xl opacity-60 animate-float-medium" style="animation-delay: 0.5s;">🍃</div>
+        <div class="absolute top-3/4 left-1/4 text-xl opacity-50 animate-float-slow" style="animation-delay: 3s;">✨</div>
+        <div class="absolute bottom-20 right-1/3 text-2xl opacity-50 animate-float-medium" style="animation-delay: 1.8s;">🐝</div>
+    </div>
+
+    <header class="sticky top-0 z-40 backdrop-blur-md background-white/70 bg-white/80 border-b border-green-100 shadow-sm transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToTop()">
+                <div class="w-10 h-10 rounded-2xl bg-lumi-neon flex items-center justify-center text-2xl shadow-soft-glow transform hover:scale-110 transition-transform">
+                    🌱
+                </div>
+                <div>
+                    <span class="font-heading text-2xl font-bold tracking-wide text-lumi-darkgreen">LUMI</span>
+                    <span class="text-xs bg-lumi-mint text-lumi-darkgreen px-2 py-0.5 rounded-full font-bold ml-1 border border-lumi-neon/40 hidden sm:inline-block">
+                        AI Companion
+                    </span>
+                </div>
+            </div>
+
+            <!-- Central Nav Links -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 bg-lumi-softbg p-1.5 rounded-full border border-green-200/60">
+                <button onclick="scrollToSection('home-world')" class="px-4 py-1.5 rounded-full text-sm font-bold text-lumi-darkgreen hover:bg-white hover:shadow-sm transition">
+                    🏡 World
+                </button>
+                <button onclick="scrollToSection('daily-discovery')" class="px-4 py-1.5 rounded-full text-sm font-bold text-lumi-darkgreen hover:bg-white hover:shadow-sm transition">
+                    ✨ Daily Fact
+                </button>
+                <button onclick="scrollToSection('flashcards-section')" class="px-4 py-1.5 rounded-full text-sm font-bold text-lumi-darkgreen hover:bg-white hover:shadow-sm transition">
+                    🃏 Cards
+                </button>
+                <button onclick="scrollToSection('actions-section')" class="px-4 py-1.5 rounded-full text-sm font-bold text-lumi-darkgreen hover:bg-white hover:shadow-sm transition">
+                    🌱 Actions
+                </button>
+            </nav>
+
+            <!-- Controls: Saved Cards + Language Dropdown -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Saved Counter Button -->
+                <button onclick="toggleSavedCardsModal()" class="relative p-2.5 rounded-2xl bg-lumi-mint text-lumi-darkgreen hover:bg-lumi-neon/30 transition flex items-center justify-center border border-green-200">
+                    <i class="fa-solid fa-heart text-emerald-600 text-lg"></i>
+                    <span id="saved-count-badge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                        0
+                    </span>
+                </button>
+
+                <!-- Language Selector Dropdown -->
+                <div class="relative">
+                    <button id="lang-btn" onclick="toggleLangMenu()" class="px-3 py-2 rounded-2xl bg-white border-2 border-lumi-neon text-lumi-darkgreen font-bold text-sm flex items-center space-x-2 shadow-sm hover:border-emerald-400 transition">
+                        <span id="current-lang-flag">🇬🇧</span>
+                        <span id="current-lang-code" class="uppercase">EN</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-1"></i>
+                    </button>
+                    <!-- Language Menu -->
+                    <div id="lang-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-green-100 p-2 z-50 space-y-1">
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-lumi-mint flex items-center space-x-3">
+                            <span>🇬🇧</span>
+                            <span>English</span>
+                        </button>
+                        <button onclick="changeLanguage('id')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-lumi-mint flex items-center space-x-3">
+                            <span>🇮🇩</span>
+                            <span>Bahasa Indonesia</span>
+                        </button>
+                        <button onclick="changeLanguage('zh')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-lumi-mint flex items-center space-x-3">
+                            <span>🇨🇳</span>
+                            <span>Simplified Chinese</span>
+                        </button>
+                        <button onclick="changeLanguage('ko')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-lumi-mint flex items-center space-x-3">
+                            <span>🇰🇷</span>
+                            <span>한국어 (Korean)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="relative z-10 flex-grow max-w-6xl w-full mx-auto px-4 py-6 space-y-16">
+
+        <section id="home-world" class="relative bg-gradient-to-b from-lumi-mint/80 via-white/60 to-lumi-softbg rounded-3xl p-6 md:p-10 border-2 border-lumi-neon/30 shadow-cute-card overflow-hidden">
+            <!-- Decorative garden grass base -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-emerald-100/80 to-transparent pointer-events-none"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Left: Hero Text & Call-To-Action -->
+                <div class="lg:col-span-5 text-center lg:text-left space-y-4 z-10">
+                    <div class="inline-flex items-center space-x-2 bg-white/90 px-3 py-1.5 rounded-full border border-green-200 text-xs font-bold text-emerald-800 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span id="hero-tagline">“Discover Earth with Lumi.”</span>
+                    </div>
+                    <h1 id="hero-headline" class="text-4xl md:text-5xl font-extrabold text-lumi-darkgreen leading-tight">
+                        Hi! I’m Lumi! 🌱
+                    </h1>
+                    <p id="hero-subtitle" class="text-lg text-emerald-900/80 font-medium">
+                        Wanna discover something cool about our planet?
+                    </p>
+
+                    <!-- Interactive Buttons -->
+                    <div class="flex flex-wrap gap-3 justify-center lg:justify-start pt-2">
+                        <button onclick="scrollToSection('flashcards-section')" class="px-6 py-3.5 bg-lumi-darkgreen text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-900 transform hover:-translate-y-1 transition flex items-center space-x-2">
+                            <span>Explore Nature</span>
+                            <span class="text-lg">🌿</span>
+                        </button>
+                        <button onclick="openChatWithPrompt('Hi Lumi!')" class="px-6 py-3.5 bg-lumi-neon text-lumi-darkgreen font-extrabold rounded-2xl shadow-soft-glow hover:bg-lumi-green transform hover:-translate-y-1 transition flex items-center space-x-2 border border-emerald-300">
+                            <span>Talk to Lumi</span>
+                            <span class="text-lg">💚</span>
+                        </button>
+                    </div>
+
+                    <!-- Lumi Cute Voice Audition Soundboard -->
+                    <div class="pt-4 border-t border-emerald-100/60">
+                        <span class="text-xs font-extrabold text-lumi-darkgreen flex items-center space-x-1 mb-2">
+                            <span>✨ Hear Lumi’s Cute Voice (“Cempreng & Imut”):</span>
+                        </span>
+                        <div class="flex flex-wrap gap-2 justify-center lg:justify-start">
+                            <button onclick="auditionLumiVoice('waaah')" class="px-3 py-1.5 bg-white border-2 border-emerald-300 text-lumi-darkgreen rounded-xl text-xs font-extrabold hover:bg-lumi-mint transition shadow-sm flex items-center space-x-1">
+                                <span>🔊 “Waaah!”</span>
+                            </button>
+                            <button onclick="auditionLumiVoice('ehehe')" class="px-3 py-1.5 bg-white border-2 border-emerald-300 text-lumi-darkgreen rounded-xl text-xs font-extrabold hover:bg-lumi-mint transition shadow-sm flex items-center space-x-1">
+                                <span>🔊 “Ehehe…”</span>
+                            </button>
+                            <button onclick="auditionLumiVoice('psst')" class="px-3 py-1.5 bg-white border-2 border-emerald-300 text-lumi-darkgreen rounded-xl text-xs font-extrabold hover:bg-lumi-mint transition shadow-sm flex items-center space-x-1">
+                                <span>🔊 “Psst…”</span>
+                            </button>
+                            <button onclick="auditionLumiVoice('yay')" class="px-3 py-1.5 bg-white border-2 border-emerald-300 text-lumi-darkgreen rounded-xl text-xs font-extrabold hover:bg-lumi-mint transition shadow-sm flex items-center space-x-1">
+                                <span>🔊 “Yayyy!”</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: LUMI'S LITTLE INTERACTIVE NATURE WORLD -->
+                <div class="lg:col-span-7 relative min-h-[380px] sm:min-h-[420px] flex items-center justify-center">
+                    
+                    <!-- Lumi Mascot SVG Canvas / Container -->
+                    <div class="relative z-20 flex flex-col items-center">
+                        <!-- Lumi Speech Bubble -->
+                        <div id="lumi-hero-speech" class="relative mb-3 bg-white px-5 py-3 rounded-2xl border-2 border-lumi-neon shadow-md max-w-xs text-center animate-bounce-gentle">
+                            <span id="lumi-speech-text" class="font-bold text-lumi-darkgreen text-sm sm:text-base">
+                                Psst… come explore with me! 👀
+                            </span>
+                            <!-- Speech bubble tail -->
+                            <div class="absolute -bottom-2.5 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-lumi-neon rotate-45"></div>
+                        </div>
+
+                        <!-- Lumi Mascot Rendering -->
+                        <div id="lumi-character-wrapper" onclick="triggerLumiJoy()" class="cursor-pointer group relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center animate-float-slow transition-transform hover:scale-105">
+                            
+                            <!-- Soft ambient halo -->
+                            <div class="absolute w-40 h-40 bg-lumi-neon/40 rounded-full blur-2xl animate-pulse-glow"></div>
+
+                            <!-- Lumi Mascot Render (SVG) -->
+                            <svg id="lumi-svg" class="w-full h-full relative z-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Shadow -->
+                                <ellipse cx="100" cy="182" rx="42" ry="10" fill="#1E5235" fill-opacity="0.12"/>
+                                
+                                <!-- Feet -->
+                                <ellipse cx="80" cy="172" rx="14" ry="10" fill="#EBFEEF" stroke="#1E5235" stroke-width="3"/>
+                                <ellipse cx="120" cy="172" rx="14" ry="10" fill="#EBFEEF" stroke="#1E5235" stroke-width="3"/>
+                                
+                                <!-- Body (Soft Rounded Pear Shape) -->
+                                <path d="M60 110C60 80 80 65 100 65C120 65 140 80 140 110C140 145 130 170 100 170C70 170 60 145 60 110Z" fill="#FFFFFF" stroke="#1E5235" stroke-width="3.5"/>
+                                
+                                <!-- Neon Green Belly Oval -->
+                                <ellipse cx="100" cy="130" rx="26" ry="22" fill="#E6FCF0" stroke="#72FD9A" stroke-width="2"/>
+
+                                <!-- Hands -->
+                                <ellipse id="lumi-hand-left" cx="54" cy="125" rx="10" ry="12" fill="#FFFFFF" stroke="#1E5235" stroke-width="3" class="transition-all duration-300"/>
+                                <ellipse id="lumi-hand-right" cx="146" cy="125" rx="10" ry="12" fill="#FFFFFF" stroke="#1E5235" stroke-width="3" class="transition-all duration-300"/>
+
+                                <!-- Cheeks (Soft Pink) -->
+                                <ellipse cx="74" cy="118" rx="8" ry="5" fill="#FFB6C1" opacity="0.85"/>
+                                <ellipse cx="126" cy="118" rx="8" ry="5" fill="#FFB6C1" opacity="0.85"/>
+
+                                <!-- Big Glossy Eyes -->
+                                <g id="lumi-eyes">
+                                    <ellipse cx="80" cy="108" rx="8.5" ry="11" fill="#1E5235"/>
+                                    <circle cx="78" cy="104" r="3.5" fill="#FFFFFF"/>
+                                    <circle cx="82" cy="111" r="1.5" fill="#FFFFFF"/>
+
+                                    <ellipse cx="120" cy="108" rx="8.5" ry="11" fill="#1E5235"/>
+                                    <circle cx="118" cy="104" r="3.5" fill="#FFFFFF"/>
+                                    <circle cx="122" cy="111" r="1.5" fill="#FFFFFF"/>
+                                </g>
+
+                                <!-- Mouth -->
+                                <path id="lumi-mouth" d="M94 121 Q100 126 106 121" stroke="#1E5235" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+                                <!-- Leaf Accessory on Head -->
+                                <g id="lumi-leaf-head" class="animate-sway">
+                                    <path d="M100 66 C100 45 118 35 125 40 C130 45 122 62 100 66 Z" fill="#72FD9A" stroke="#1E5235" stroke-width="2.5"/>
+                                    <path d="M102 62 C110 52 118 45 122 42" stroke="#1E5235" stroke-width="1.5" stroke-linecap="round"/>
+                                    <!-- Tiny glowing AI leaf spark -->
+                                    <circle cx="123" cy="40" r="3" fill="#FFF2AC"/>
+                                </g>
+
+                                <!-- Cute Ribbon -->
+                                <path d="M92 70 C85 62 75 68 85 73 Z" fill="#FFD1DC" stroke="#1E5235" stroke-width="1.5"/>
+                                <path d="M108 70 C115 62 125 68 115 73 Z" fill="#FFD1DC" stroke="#1E5235" stroke-width="1.5"/>
+                                <circle cx="100" cy="71" r="3.5" fill="#FFB6C1" stroke="#1E5235" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-800/60 mt-1">Tap Lumi! ✨</span>
+                    </div>
+
+                    <!-- CLICKABLE WORLD OBJECTS AROUND LUMI -->
+                    <!-- 🌳 Tree -->
+                    <div onclick="selectCategory('Trees')" class="absolute top-4 left-4 sm:left-10 cursor-pointer group flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-white/90 border-2 border-emerald-300 flex items-center justify-center text-2xl shadow-md group-hover:scale-110 group-hover:bg-emerald-100 transition animate-sway">
+                            🌳
+                        </div>
+                        <span class="mt-1 px-2.5 py-0.5 rounded-full bg-white text-emerald-900 text-xs font-extrabold shadow-sm group-hover:bg-lumi-neon transition">
+                            Trees
+                        </span>
+                    </div>
+
+                    <!-- 🌸 Flower -->
+                    <div onclick="selectCategory('Plants')" class="absolute top-6 right-4 sm:right-10 cursor-pointer group flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-white/90 border-2 border-pink-300 flex items-center justify-center text-2xl shadow-md group-hover:scale-110 group-hover:bg-pink-100 transition animate-float-medium">
+                            🌸
+                        </div>
+                        <span class="mt-1 px-2.5 py-0.5 rounded-full bg-white text-pink-900 text-xs font-extrabold shadow-sm group-hover:bg-pink-200 transition">
+                            Plants
+                        </span>
+                    </div>
+
+                    <!-- 🐝 Bee -->
+                    <div onclick="selectCategory('Animals')" class="absolute bottom-16 left-2 sm:left-8 cursor-pointer group flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-white/90 border-2 border-amber-300 flex items-center justify-center text-2xl shadow-md group-hover:scale-110 group-hover:bg-amber-100 transition animate-float-slow">
+                            🐝
+                        </div>
+                        <span class="mt-1 px-2.5 py-0.5 rounded-full bg-white text-amber-900 text-xs font-extrabold shadow-sm group-hover:bg-amber-200 transition">
+                            Animals
+                        </span>
+                    </div>
+
+                    <!-- 🌊 Small Pond -->
+                    <div onclick="selectCategory('Ocean')" class="absolute bottom-12 right-2 sm:right-8 cursor-pointer group flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-white/90 border-2 border-sky-300 flex items-center justify-center text-2xl shadow-md group-hover:scale-110 group-hover:bg-sky-100 transition animate-float-medium">
+                            🌊
+                        </div>
+                        <span class="mt-1 px-2.5 py-0.5 rounded-full bg-white text-sky-900 text-xs font-extrabold shadow-sm group-hover:bg-sky-200 transition">
+                            Ocean
+                        </span>
+                    </div>
+
+                    <!-- 🌎 Tiny Earth -->
+                    <div onclick="selectCategory('Climate')" class="absolute top-1/2 left-0 transform -translate-y-1/2 cursor-pointer group flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-2xl bg-white/90 border-2 border-teal-300 flex items-center justify-center text-xl shadow-md group-hover:scale-110 group-hover:bg-teal-100 transition">
+                            🌎
+                        </div>
+                        <span class="mt-1 px-2 py-0.5 rounded-full bg-white text-teal-900 text-[10px] font-extrabold shadow-sm">
+                            Climate
+                        </span>
+                    </div>
+
+                    <!-- ♻️ Recycling Box -->
+                    <div onclick="selectCategory('Sustainability')" class="absolute top-1/2 right-0 transform -translate-y-1/2 cursor-pointer group flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-2xl bg-white/90 border-2 border-emerald-400 flex items-center justify-center text-xl shadow-md group-hover:scale-110 group-hover:bg-emerald-100 transition">
+                            ♻️
+                        </div>
+                        <span class="mt-1 px-2 py-0.5 rounded-full bg-white text-emerald-900 text-[10px] font-extrabold shadow-sm">
+                            Eco
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="daily-discovery" class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">✨</span>
+                    <h2 id="daily-discovery-title" class="text-2xl sm:text-3xl font-extrabold text-lumi-darkgreen">
+                        Lumi's Daily Discovery
+                    </h2>
+                </div>
+                <button onclick="pickRandomDiscovery()" class="px-4 py-2 bg-lumi-yellow text-amber-900 font-bold rounded-2xl border border-amber-300 shadow-sm hover:bg-amber-200 transition flex items-center space-x-2 text-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span id="surprise-btn-label">Surprise Me!</span>
+                </button>
+            </div>
+
+            <!-- Featured Large Fact Card -->
+            <div id="daily-card-container" class="bg-white rounded-3xl p-6 sm:p-8 border-2 border-lumi-neon/50 shadow-cute-card relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-lumi-mint rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <!-- Icon & Title -->
+                    <div class="md:col-span-4 flex flex-col items-center text-center p-4 bg-lumi-softbg rounded-2xl border border-green-100">
+                        <span id="daily-card-icon" class="text-6xl mb-3 transform hover:scale-110 transition">🌳</span>
+                        <span id="daily-card-category" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-1">
+                            Trees
+                        </span>
+                        <h3 id="daily-card-title" class="text-2xl font-bold text-lumi-darkgreen">
+                            Bristlecone Pine
+                        </h3>
+                    </div>
+
+                    <!-- Fact Content & Lumi Reaction -->
+                    <div class="md:col-span-8 space-y-4">
+                        <div class="bg-emerald-50/70 p-4 rounded-2xl border-l-4 border-emerald-400">
+                            <p id="daily-card-fact" class="text-lg font-semibold text-emerald-950">
+                                “Some bristlecone pine trees are more than 4,000 years old.”
+                            </p>
+                        </div>
+
+                        <!-- Lumi Reaction Speech Box -->
+                        <div class="flex items-start space-x-3 bg-lumi-mint p-4 rounded-2xl border border-lumi-neon/60">
+                            <div class="w-10 h-10 rounded-full bg-white flex-shrink-0 flex items-center justify-center text-xl shadow-sm">
+                                💚
+                            </div>
+                            <div class="flex-grow space-y-1">
+                                <span class="text-xs font-extrabold text-emerald-800 tracking-wide uppercase">Lumi Says</span>
+                                <p id="daily-lumi-says" class="text-sm sm:text-base font-bold text-lumi-darkgreen">
+                                    “WHOA… 😳 Four thousand years?! That tree has seen A LOT! What an old little soul! 🌳✨”
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                            <div class="flex items-center space-x-2">
+                                <button id="daily-listen-btn" onclick="speakDailyFact()" class="px-4 py-2.5 bg-lumi-neon text-lumi-darkgreen font-extrabold rounded-2xl shadow-sm hover:bg-lumi-green transition flex items-center space-x-2 text-sm border border-emerald-300">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                    <span id="daily-listen-label">Listen to Lumi</span>
+                                </button>
+                                <button onclick="openDetailModalFromDaily()" class="px-4 py-2.5 bg-white text-emerald-800 font-bold rounded-2xl border border-emerald-200 hover:bg-emerald-50 transition text-sm">
+                                    🌱 Tell Me More
+                                </button>
+                            </div>
+                            <button id="daily-save-btn" onclick="toggleSaveDaily()" class="p-2.5 rounded-2xl bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 transition flex items-center space-x-1.5 text-sm font-bold">
+                                <i id="daily-save-icon" class="fa-regular fa-heart"></i>
+                                <span id="daily-save-label">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flashcards-section" class="space-y-6">
+            <div class="text-center space-y-2">
+                <h2 id="gallery-title" class="text-3xl font-extrabold text-lumi-darkgreen">
+                    Let’s Explore! 🃏🌱
+                </h2>
+                <p id="gallery-subtitle" class="text-emerald-800/80 font-medium">
+                    Tap a card to flip it over and learn a fun fact!
+                </p>
+            </div>
+
+            <!-- Category Filter Buttons Horizontal Scroll -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-3 pt-1 no-scrollbar scroll-smooth">
+                <button onclick="filterCategory('All')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-lumi-darkgreen text-white shadow-sm" data-cat="All">
+                    ✨ All Facts
+                </button>
+                <button onclick="filterCategory('Trees')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Trees">
+                    🌳 Trees
+                </button>
+                <button onclick="filterCategory('Plants')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Plants">
+                    🌱 Plants
+                </button>
+                <button onclick="filterCategory('Animals')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Animals">
+                    🐝 Animals
+                </button>
+                <button onclick="filterCategory('Ocean')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Ocean">
+                    🌊 Ocean
+                </button>
+                <button onclick="filterCategory('Climate')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Climate">
+                    🌎 Climate
+                </button>
+                <button onclick="filterCategory('Sustainability')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Sustainability">
+                    ♻️ Eco
+                </button>
+                <button onclick="filterCategory('Fungi')" class="cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint" data-cat="Fungi">
+                    🍄 Fungi
+                </button>
+            </div>
+
+            <!-- FLASHCARD GRID CONTAINER -->
+            <div id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Flashcards rendered dynamically via JavaScript -->
+            </div>
+        </section>
+
+        <section id="actions-section" class="bg-gradient-to-r from-lumi-mint via-white to-lumi-mint rounded-3xl p-6 sm:p-8 border-2 border-lumi-neon/40 shadow-cute-card space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wide">
+                        Mini Green Missions
+                    </span>
+                    <h2 id="actions-title" class="text-2xl sm:text-3xl font-extrabold text-lumi-darkgreen mt-1">
+                        Small Actions, Big Love 🌱💚
+                    </h2>
+                    <p id="actions-subtitle" class="text-emerald-800/80 text-sm font-medium">
+                        Complete little eco-habits today to make Earth smile!
+                    </p>
+                </div>
+                <!-- Progress Badge -->
+                <div class="flex items-center space-x-3 bg-white px-4 py-2.5 rounded-2xl border border-emerald-200 shadow-sm">
+                    <span class="text-2xl">🏆</span>
+                    <div>
+                        <div class="text-xs font-bold text-gray-500">Your Green Badge</div>
+                        <div id="badge-level" class="text-sm font-extrabold text-emerald-800">Sprout Friend 🌱</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Green Checklist Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="green-actions-grid">
+                <!-- Actions rendered dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="relative z-10 bg-white border-t border-green-100 mt-20 py-8">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🌱</span>
+                <div>
+                    <div class="font-heading font-extrabold text-lg text-lumi-darkgreen">LUMI</div>
+                    <div class="text-xs text-emerald-800/60 font-semibold">Your tiny environmental AI companion</div>
+                </div>
+            </div>
+
+            <p class="text-xs font-medium text-emerald-900/60">
+                Created with love for our beautiful planet Earth 🌎✨
+            </p>
+
+            <div class="flex items-center space-x-3 text-xs font-bold text-emerald-800">
+                <button onclick="scrollToTop()" class="hover:text-emerald-500">Back to top ↑</button>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- FLOATING "ASK LUMI" BUTTON -->
+    <button onclick="toggleChatWindow()" class="fixed bottom-6 right-6 z-40 px-5 py-3.5 bg-lumi-darkgreen text-white rounded-full shadow-float-btn hover:bg-emerald-900 transform hover:scale-105 transition flex items-center space-x-3 border-2 border-lumi-neon">
+        <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lumi-neon opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-lumi-neon"></span>
+        </span>
+        <span class="font-extrabold text-sm sm:text-base tracking-wide">Ask Lumi</span>
+        <span class="text-xl">💬</span>
+    </button>
+
+    <!-- "ASK LUMI" CHAT WINDOW MODAL -->
+    <div id="chat-window" class="hidden fixed bottom-24 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 max-h-[520px] h-[80vh] bg-white rounded-3xl shadow-2xl border-2 border-lumi-neon z-50 flex flex-col overflow-hidden">
+        <!-- Chat Header -->
+        <div class="bg-lumi-mint p-4 border-b border-green-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm border border-lumi-neon">
+                    🌱
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-lumi-darkgreen leading-tight">Ask Lumi 💚</h4>
+                    <span class="text-[11px] text-emerald-700 font-bold flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span id="chat-status">Ready to chat!</span>
+                    </span>
+                </div>
+            </div>
+            <button onclick="toggleChatWindow()" class="w-8 h-8 rounded-full bg-white text-gray-500 hover:text-red-500 flex items-center justify-center transition border border-gray-200">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Chat Scroll Messages -->
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-lumi-softbg text-sm">
+            <!-- Initial welcome message rendered in JS -->
+        </div>
+
+        <!-- Quick Question Suggestions -->
+        <div class="px-3 py-2 bg-white border-t border-green-100 flex space-x-1.5 overflow-x-auto no-scrollbar text-xs">
+            <button onclick="sendQuickQuestion('Trees')" class="px-2.5 py-1 rounded-full bg-lumi-mint text-emerald-800 font-bold whitespace-nowrap hover:bg-emerald-200 transition">
+                🌳 Trees
+            </button>
+            <button onclick="sendQuickQuestion('Animals')" class="px-2.5 py-1 rounded-full bg-lumi-mint text-emerald-800 font-bold whitespace-nowrap hover:bg-emerald-200 transition">
+                🐝 Animals
+            </button>
+            <button onclick="sendQuickQuestion('Ocean')" class="px-2.5 py-1 rounded-full bg-lumi-mint text-emerald-800 font-bold whitespace-nowrap hover:bg-emerald-200 transition">
+                🌊 Ocean
+            </button>
+            <button onclick="sendQuickQuestion('Climate')" class="px-2.5 py-1 rounded-full bg-lumi-mint text-emerald-800 font-bold whitespace-nowrap hover:bg-emerald-200 transition">
+                🌎 Climate
+            </button>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 bg-white border-t border-green-100 flex items-center space-x-2">
+            <input type="text" id="chat-input" placeholder="Ask Lumi something..." class="flex-grow px-4 py-2.5 bg-lumi-softbg border border-green-200 rounded-2xl text-sm text-gray-800 focus:outline-none focus:border-emerald-400 font-medium">
+            <button type="submit" class="p-2.5 bg-lumi-darkgreen text-white rounded-2xl hover:bg-emerald-900 transition flex items-center justify-center">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- FLASHCARD DETAIL MODAL ("Tell Me More") -->
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 border-2 border-lumi-neon shadow-2xl relative overflow-hidden animate-bounce-gentle" style="animation-duration: 0.4s; animation-iteration-count: 1;">
+            
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-lumi-softbg text-gray-500 hover:bg-rose-100 hover:text-rose-600 transition flex items-center justify-center font-bold">
+                ✕
+            </button>
+
+            <div class="flex items-center space-x-4 border-b border-green-100 pb-4">
+                <div id="modal-icon" class="text-5xl p-3 bg-lumi-mint rounded-2xl border border-lumi-neon">🌳</div>
+                <div>
+                    <span id="modal-category" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase tracking-wide">Category</span>
+                    <h3 id="modal-title" class="text-2xl font-extrabold text-lumi-darkgreen mt-1">Fact Title</h3>
+                </div>
+            </div>
+
+            <!-- Detailed Explanation Text -->
+            <div class="space-y-3">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Scientific Knowledge</h4>
+                <p id="modal-explanation" class="text-gray-700 text-base font-medium leading-relaxed">
+                    Detailed nature explanation content...
+                </p>
+            </div>
+
+            <!-- Lumi Cute Commentary Box -->
+            <div class="bg-lumi-mint p-4 rounded-2xl border border-lumi-neon/60 flex items-start space-x-3">
+                <span class="text-2xl">💚</span>
+                <div>
+                    <span class="text-xs font-extrabold text-emerald-800 uppercase">Lumi's Thought</span>
+                    <p id="modal-lumi-says" class="text-sm font-bold text-lumi-darkgreen mt-0.5">Lumi reaction...</p>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex items-center justify-between pt-2">
+                <button id="modal-listen-btn" onclick="speakModalFact()" class="px-5 py-2.5 bg-lumi-neon text-lumi-darkgreen font-extrabold rounded-2xl shadow-sm hover:bg-lumi-green transition flex items-center space-x-2 text-sm border border-emerald-300">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span id="modal-listen-label">Listen to Lumi</span>
+                </button>
+                <button onclick="closeDetailModal()" class="px-5 py-2.5 bg-lumi-darkgreen text-white font-bold rounded-2xl hover:bg-emerald-900 transition text-sm">
+                    Got it! 🌱
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAVED CARDS MODAL -->
+    <div id="saved-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] flex flex-col p-6 border-2 border-lumi-neon shadow-2xl relative">
+            <div class="flex items-center justify-between pb-4 border-b border-green-100">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">💚</span>
+                    <h3 class="text-2xl font-extrabold text-lumi-darkgreen">My Saved Nature Cards</h3>
+                </div>
+                <button onclick="toggleSavedCardsModal()" class="w-8 h-8 rounded-full bg-lumi-softbg text-gray-500 hover:bg-rose-100 hover:text-rose-600 transition flex items-center justify-center font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <div id="saved-cards-list" class="flex-grow overflow-y-auto py-4 space-y-3">
+                <!-- Saved items rendered in JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let currentLang = 'en';
+        let savedFactIds = JSON.parse(localStorage.getItem('lumi_saved_facts') || '[]');
+        let activeCategory = 'All';
+        let currentDailyFactId = 1; // Bristlecone pine
+        let currentModalFactId = null;
+        let isSpeaking = false;
+        let activeUtterance = null;
+        let availableVoices = [];
+
+        // Pre-load synthesized voices
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                availableVoices = window.speechSynthesis.getVoices();
+            }
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+        }
+
+        const i18n = {
+            en: {
+                tagline: "“Discover Earth with Lumi.”",
+                headline: "Hi! I’m Lumi! 🌱",
+                subtitle: "Wanna discover something cool about our planet?",
+                speechBubble: "Psst… come explore with me! 👀",
+                exploreBtn: "Explore Nature 🌿",
+                talkBtn: "Talk to Lumi 💚",
+                dailyTitle: "Lumi's Daily Discovery",
+                surpriseBtn: "Surprise Me!",
+                listenBtn: "Listen to Lumi",
+                tellMeMore: "Tell Me More 🌱",
+                saveBtn: "Save",
+                savedBtn: "Saved!",
+                galleryTitle: "Let’s Explore! 🃏🌱",
+                gallerySubtitle: "Tap a card to flip it over and learn a fun fact!",
+                actionsTitle: "Small Actions, Big Love 🌱💚",
+                actionsSubtitle: "Complete little eco-habits today to make Earth smile!",
+                chatWelcome: "Hi hii! 🌱 What do you wanna know about nature, animals, or our planet?",
+                chatPlaceholder: "Ask Lumi something...",
+                noVoiceMsg: "Lumi's voice isn't available on this device yet 💚",
+                lumiTalking: "Lumi is talking..."
+            },
+            id: {
+                tagline: "“Jelajahi Bumi Bersama Lumi.”",
+                headline: "Hai! Aku Lumi! 🌱",
+                subtitle: "Mau tahu hal keren tentang planet kita?",
+                speechBubble: "Psst… yuk petualangan bersamaku! 👀",
+                exploreBtn: "Jelajahi Alam 🌿",
+                talkBtn: "Ngobrol sama Lumi 💚",
+                dailyTitle: "Penemuan Harian Lumi",
+                surpriseBtn: "Kejutan Dong!",
+                listenBtn: "Dengar Lumi",
+                tellMeMore: "Pelajari Lagi 🌱",
+                saveBtn: "Simpan",
+                savedBtn: "Tersimpan!",
+                galleryTitle: "Ayo Jelajahi! 🃏🌱",
+                gallerySubtitle: "Ketuk kartu untuk membalik dan temukan fakta seru!",
+                actionsTitle: "Aksi Kecil, Cinta Besar 🌱💚",
+                actionsSubtitle: "Lakukan kebiasaan hijau hari ini agar Bumi tersenyum!",
+                chatWelcome: "Hai haii! 🌱 Mau tahu apa tentang alam, hewan, atau planet kita?",
+                chatPlaceholder: "Tanya Lumi sesuatu...",
+                noVoiceMsg: "Suara Lumi belum tersedia di perangkat ini 💚",
+                lumiTalking: "Lumi sedang bicara..."
+            },
+            zh: {
+                tagline: "“和 Lumi 一起探索地球。”",
+                headline: "嗨！我是 Lumi！🌱",
+                subtitle: "想了解我们星球上有趣的秘密吗？",
+                speechBubble: "嘘… 快和我一起探索吧！👀",
+                exploreBtn: "探索自然 🌿",
+                talkBtn: "和 Lumi 聊天 💚",
+                dailyTitle: "Lumi 的每日发现",
+                surpriseBtn: "给我惊喜！",
+                listenBtn: "听 Lumi 说话",
+                tellMeMore: "了解更多 🌱",
+                saveBtn: "收藏",
+                savedBtn: "已收藏！",
+                galleryTitle: "一起来探索吧！🃏🌱",
+                gallerySubtitle: "点击卡片翻面，解锁神奇知识！",
+                actionsTitle: "微小行动，无限爱心 🌱💚",
+                actionsSubtitle: "完成今天的环保小任务，让地球微笑吧！",
+                chatWelcome: "嗨嗨！🌱 你想了解关于大自然、动物或地球的什么知识呢？",
+                chatPlaceholder: "向 Lumi 提问...",
+                noVoiceMsg: "此设备暂不支持 Lumi 的语音功能 💚",
+                lumiTalking: "Lumi 正在说话..."
+            },
+            ko: {
+                tagline: "“루미와 함께 지구를 탐험해요.”",
+                headline: "안녕! 나는 루미야! 🌱",
+                subtitle: "우리 지구의 신기한 이야기를 들어볼래?",
+                speechBubble: "쉿… 나와 함께 탐험하러 가자! 👀",
+                exploreBtn: "자연 탐험하기 🌿",
+                talkBtn: "루미와 대화하기 💚",
+                dailyTitle: "루미의 오늘의 발견",
+                surpriseBtn: "깜짝 놀라게 해줘!",
+                listenBtn: "루미 목소리 듣기",
+                tellMeMore: "더 알아보기 🌱",
+                saveBtn: "저장",
+                savedBtn: "저장됨!",
+                galleryTitle: "함께 탐험해요! 🃏🌱",
+                gallerySubtitle: "카드를 터치해 뒤집고 재미있는 사실을 찾아보세요!",
+                actionsTitle: "작은 실천, 큰 사랑 🌱💚",
+                actionsSubtitle: "지구가 미소 지을 수 있도록 오늘 작은 환경 습관을 실천해요!",
+                chatWelcome: "안녕 안녕! 🌱 자연, 동물, 지구에 대해 궁금한 점이 있니?",
+                chatPlaceholder: "루미에게 물어보세요...",
+                noVoiceMsg: "이 기기에서는 루미의 음성을 사용할 수 없어요 💚",
+                lumiTalking: "루미가 말하고 있어요..."
+            }
+        };
+
+        const factsDatabase = [
+            {
+                id: 1,
+                icon: "🌳",
+                category: "Trees",
+                titles: { en: "Bristlecone Pine", id: "Pines Bristlecone", zh: "刺果松", ko: "브리스슬콘 소나무" },
+                facts: {
+                    en: "Some bristlecone pine trees are more than 4,000 years old.",
+                    id: "Beberapa pohon pinus bristlecone berumur lebih dari 4.000 tahun.",
+                    zh: "有些刺果松的树龄已超过 4000 年。",
+                    ko: "일부 브리스슬콘 소나무는 나이가 4,000살이 넘습니다."
+                },
+                lumiSays: {
+                    en: "WHOA… 😳 Four thousand years?! That tree has seen A LOT! What an old little soul! 🌳✨",
+                    id: "WAAAH… 😳 Empat ribu tahun?! Pohon itu udah liat banyak sejarah! Tua dan bijak banget! 🌳✨",
+                    zh: "哇… 😳 四千年？！那棵树见证了太多历史了！真是一位古老的大自然长老！🌳✨",
+                    ko: "우와아… 😳 4천 살이라니?! 그 나무는 정말 많은 걸 봤을 거야! 신기하다! 🌳✨"
+                },
+                details: {
+                    en: "Bristlecone pines grow in dry high-altitude mountains in the western USA. Their wood is extremely dense and resinous, protecting them from insects, fungi, and harsh weather for thousands of years!",
+                    id: "Pohon ini tumbuh di pegunungan tinggi yang kering. Kayunya sangat padat dan berdamar, melindunginya dari serangga dan cuaca ekstrem selama ribuan tahun!",
+                    zh: "刺果松生长在北美高海拔干燥山区。它们的木质极其坚硬密实且富含树脂，能抵御昆虫、真菌和恶劣气候长达数千年！",
+                    ko: "브리스슬콘 소나무는 고지대 건조한 산악 지대에서 자랍니다. 단단하고 수진이 풍부한 목질 덕분에 수천 년 동안 수해와 추위를 견뎌낼 수 있어요!"
+                }
+            },
+            {
+                id: 2,
+                icon: "🐝",
+                category: "Animals",
+                titles: { en: "Honeybees", id: "Lebah Madu", zh: "蜜蜂", ko: "꿀벌" },
+                facts: {
+                    en: "Bees communicate by performing a special 'waggle dance' inside their hive.",
+                    id: "Lebah berkomunikasi dengan melakukan 'tarian goyang' di dalam sarang.",
+                    zh: "蜜蜂在蜂巢里通过跳独特的“摇摆舞”来相互交流。",
+                    ko: "꿀벌은 벌집 안에서 '엉덩이 춤'을 추며 대화합니다."
+                },
+                lumiSays: {
+                    en: "Tiny bee, BIG job! 🐝💛 These little buzzers dance to show where sweet flowers are!",
+                    id: "Lebah kecil, tugas BESAR! 🐝💛 Mereka menari buat ngasih tahu temannya lokasi bunga manis!",
+                    zh: "小蜜蜂，大本领！🐝💛 它们是用跳舞来告诉小伙伴哪里有甜甜的花朵哦！",
+                    ko: "작은 벌, 엄청난 능력! 🐝💛 꽃이 어디 있는지 알려주려고 신나게 춤을 춘대요!"
+                },
+                details: {
+                    en: "When a honeybee finds nectar, it returns to the hive and dances in a figure-eight pattern. The angle and duration of the dance tell other bees the exact direction and distance to the food source!",
+                    id: "Saat menemukan nektar, lebah menari membentuk angka 8. Sudut dan durasi tariannya memberi tahu lebah lain arah dan jarak pasti makanan!",
+                    zh: "当蜜蜂发现花蜜返回蜂巢后，会跳“8字舞”。舞蹈的角度和持续时间能精准提示同伴花朵的方向与距离！",
+                    ko: "꿀벌이 꿀을 찾으면 벌집으로 돌아와 8자 모양으로 춤을 춥니다. 춤의 각도와 길이로 꽃의 방향과 거리를 정확히 알려줘요!"
+                }
+            },
+            {
+                id: 3,
+                icon: "🌊",
+                category: "Ocean",
+                titles: { en: "Whale Songs", id: "Lagu Paus", zh: "鲸鱼之歌", ko: "고래의 노래" },
+                facts: {
+                    en: "Humpback whale songs can travel hundreds of miles through the deep ocean.",
+                    id: "Nyanyian paus bungkuk bisa merambat ratusan mil di samudra dalam.",
+                    zh: "座头鲸的歌声可以在深海中传播数百英里。",
+                    ko: "혹등고래의 노래는 깊은 바닷속에서 수백 마일까지 퍼져나갑니다."
+                },
+                lumiSays: {
+                    en: "Whoa… the ocean is huge! 🌊 Humpback whales are like underwater pop stars sending musical hugs!",
+                    id: "Waaa… samudra luas banget! 🌊 Paus bungkuk kayak penyanyi bawah laut yang kirim salam!",
+                    zh: "哇… 大海太广阔啦！🌊 座头鲸就像水下大歌星，用歌声传送遥远的问候！",
+                    ko: "우와… 바다는 정말 넓다! 🌊 혹등고래는 바닷속 팝스타 같아! 멀리멀리 노래를 보내요!"
+                },
+                details: {
+                    en: "Sound travels nearly 5 times faster in water than in air. Male humpback whales compose intricate melodic patterns that can last up to 30 minutes and be heard across entire ocean basins!",
+                    id: "Suara merambat 5 kali lebih cepat di air daripada di udara. Paus jantan menyusun melodi rumit hingga 30 menit yang terdengar sangat jauh!",
+                    zh: "声音在水中的传播速度大约是在空气中的 5 倍。雄性座头鲸会吟唱长达 30 分钟的复杂旋律，穿透整片大洋！",
+                    ko: "소리는 공기 중에서보다 물속에서 5배 더 빠르게 전달됩니다. 수컷 혹등고래가 부르는 노래는 30분 동안 이어지며 바다 건너까지 들려요!"
+                }
+            },
+            {
+                id: 4,
+                icon: "🍄",
+                category: "Fungi",
+                titles: { en: "Wood Wide Web", id: "Jaringan Jamur", zh: "真菌地下网", ko: "균사체 네트워크" },
+                facts: {
+                    en: "Trees talk to each other underground using vast networks of fungi.",
+                    id: "Pohon saling ngobrol di bawah tanah lewat jaringan jamur mikoriza.",
+                    zh: "树木利用地下庞大的真菌网络相互传递信息和养分。",
+                    ko: "나무들은 지하의 버섯 균사체망을 통해 서로 대화하고 영양분을 나눠요."
+                },
+                lumiSays: {
+                    en: "Tree wisdom unlocked! 🌳✨ It's like an secret underground internet for forest friends!",
+                    id: "Rahasia hutan terungkap! 🌳✨ Kayak internet bawah tanah khusus tanaman!",
+                    zh: "树木智慧解锁！🌳✨ 这简直就是森林树木小伙伴们的地下秘密互联网！",
+                    ko: "나무의 비밀 공개! 🌳✨ 숲속 친구들만의 비밀 지하 인터넷망이 있는 셈이죠!"
+                },
+                details: {
+                    en: "Mycorrhizal fungal networks connect the roots of multiple trees. Through this network, trees exchange nutrients, warning signals about insect attacks, and even support weaker saplings!",
+                    id: "Jaringan jamur mikoriza menghubungkan akar pohon. Lewat jaringan ini, pohon berbagi nutrisi, sinyal bahaya serangga, dan merawat bibit pohon muda!",
+                    zh: "菌根真菌将无数树木的根系连接在一起。通过这个网络，树木可以互换养分、发送虫害预警，甚至照顾幼小的树苗！",
+                    ko: "균사체 네트워크는 여러 나무의 뿌리를 연결합니다. 나무들은 이를 통해 영양분을 나누고 해충의 위험을 알리며 어린 나무를 도와줍니다!"
+                }
+            },
+            {
+                id: 5,
+                icon: "🦋",
+                category: "Animals",
+                titles: { en: "Monarch Butterfly", id: "Kupu-Kupu Raja", zh: "帝王蝶", ko: "모나크 나비" },
+                facts: {
+                    en: "Monarch butterflies migrate up to 3,000 miles every single year.",
+                    id: "Kupu-kupu Monarch bermigrasi hingga 4.800 km setiap tahun.",
+                    zh: "帝王蝶每年迁徙距离长达 3000 英里（约4800公里）。",
+                    ko: "모나크 나비는 매년 최대 4,800km를 날아가 이동합니다."
+                },
+                lumiSays: {
+                    en: "Awww! Look at this little buddy! 🥹 So tiny, but such a brave long-distance flyer!",
+                    id: "Awww! Lihat si kecil ini! 🥹 Kecil banget, tapi penjelajah terbang yang super berani!",
+                    zh: "啊… 看看这个小家伙！🥹 翅膀虽然柔弱，却是超级勇敢的长途飞行家！",
+                    ko: "아우… 이 작은 친구 좀 봐! 🥹 이렇게 작지만 정말 용감한 장거리 비행사예요!"
+                },
+                details: {
+                    en: "Monarch butterflies travel all the way from Canada to Mexico for winter. What's amazing is that it takes multiple generations to complete the round trip, yet they find the exact same trees every year!",
+                    id: "Kupu-kupu ini terbang dari Kanada ke Meksiko. Butuh beberapa generasi untuk perjalanan bolak-balik, tapi mereka selalu menemukan pohon yang sama!",
+                    zh: "帝王蝶从加拿大一路飞往墨西哥越冬。更神奇的是，完成全程迁徙需要好几代蝴蝶接力，但它们总能精准找到去年的树林！",
+                    ko: "모나크 나비는 캐나다에서 메조소까지 날아갑니다. 왕복하는 데 여러 세대가 걸리지만, 매년 똑같은 나무를 찾아간대요!"
+                }
+            },
+            {
+                id: 6,
+                icon: "🌱",
+                category: "Plants",
+                titles: { en: "Photosynthesis", id: "Fotosintesis", zh: "光合作用", ko: "광합성" },
+                facts: {
+                    en: "Plants drink sunlight and carbon dioxide to make clean oxygen for us to breathe.",
+                    id: "Tanaman menyerap sinar matahari dan CO2 untuk menghasilkan oksigen segar.",
+                    zh: "植物吸收阳光和二氧化碳，制造出供我们呼吸的清新的氧气。",
+                    ko: "식물은 햇빛과 이산화탄소를 마셔 우리가 숨 쉬는 깨끗한 산소를 만들어냅니다."
+                },
+                lumiSays: {
+                    en: "Nature is pure magic! 🌱✨ Plants literally transform sunshine into delicious fresh air!",
+                    id: "Alam ajaib banget! 🌱✨ Tanaman menyulap sinar matahari jadi udara segar!",
+                    zh: "大自然真是神奇！🌱✨ 植物简直就是把阳光变成新鲜空气的小魔法师！",
+                    ko: "자연은 정말 마법 같아요! 🌱✨ 식물은 햇살을 매일 깨끗한 공기로 바꿔주거든요!"
+                },
+                details: {
+                    en: "Using chlorophyll inside their green leaves, plants convert sunlight, water, and atmospheric carbon dioxide into glucose for food and oxygen as a essential byproduct for living creatures.",
+                    id: "Menggunakan klorofil pada daun hijau, tanaman mengubah cahaya matahari, air, dan CO2 menjadi makanan serta oksigen untuk makhluk hidup.",
+                    zh: "利用叶片中的叶绿素，植物能将阳光、水和二氧化碳转化为自身所需的能量葡萄糖，并释放出动物生命不可或缺的氧气！",
+                    ko: "식물은 잎 속의 엽록소를 이용해 햇빛, 물, 이산화탄소를 영양분과 우리가 숨 쉬는 산소로 만들어줍니다!"
+                }
+            },
+            {
+                id: 7,
+                icon: "🌎",
+                category: "Climate",
+                titles: { en: "Amazon Rainforest", id: "Hutan Amazon", zh: "亚马逊雨林", ko: "아마존 우림" },
+                facts: {
+                    en: "The Amazon produce over 20% of Earth's oxygen and holds 10% of known species.",
+                    id: "Hutan Amazon menghasilkan lebih dari 20% oksigen Bumi dan rumah 10% spesies.",
+                    zh: "亚马逊雨林制造了地球上20%以上的氧气，栖息着全球10%的已知物种。",
+                    ko: "아마존 우림은 지구 산소의 20% 이상을 만들고, 알려진 생물종의 10%가 살아갑니다."
+                },
+                lumiSays: {
+                    en: "Okay, this one is important! 🌎💚 The Amazon is like Earth’s giant green lung!",
+                    id: "Oke, ini penting banget! 🌎💚 Amazon itu kayak paru-paru hijau raksasa Bumi kita!",
+                    zh: "注意啦，这个非常重要！🌎💚 亚马逊雨林就像是地球巨大的绿色肺脏！",
+                    ko: "이건 정말 중요해요! 🌎💚 아마존은 우리 지구의 커다란 초록 허파 같아요!"
+                },
+                details: {
+                    en: "Spanning across 9 South American countries, the Amazon biome absorbs vast amounts of carbon dioxide, helping stabilize global climate while supporting millions of indigenous people and wildlife.",
+                    id: "Mencakup 9 negara Amerika Selatan, Amazon menyerap CO2 dalam jumlah raksasa, menjaga iklim stabil dan rumah bagi jutaan satwa.",
+                    zh: "亚马逊跨越南美洲9个国家，吸收了海量的二氧化碳，在调节全球气候的同时，为数以百万计的野生动植物提供庇护！",
+                    ko: "남미 9개 국에 걸쳐 있는 아마존은 엄청난 양의 이산화탄소를 흡수하여 지구 기후를 안정시키고 온갖 생물들을 지켜줍니다."
+                }
+            },
+            {
+                id: 8,
+                icon: "♻️",
+                category: "Sustainability",
+                titles: { en: "Composting", id: "Kompos Organik", zh: "堆肥利用", ko: "퇴비 만들기" },
+                facts: {
+                    en: "Food scraps buried in compost turn into nutrient-rich gold soil for new plants.",
+                    id: "Sisa makanan yang dikompos berubah jadi tanah kaya nutrisi untuk tanaman baru.",
+                    zh: "把厨余垃圾变成堆肥，能转化成营养丰富的“黄金土壤”，滋养新植物。",
+                    ko: "음식물 쓰레기를 퇴비로 만들면 새 식물을 위한 영양 만점 흙으로 변해요."
+                },
+                lumiSays: {
+                    en: "Yay! Recycling food waste! ♻️✨ Banana peels become yummy superfood for tiny flowers!",
+                    id: "Yay! Daur ulang sisa makanan! ♻️✨ Kulit pisang bisa jadi nutrisi lezat buat bunga!",
+                    zh: "太棒啦！厨余垃圾大变身！♻️✨ 香蕉皮能变成给小花朵补充营养的“超级食物”！",
+                    ko: "우와! 음식물 쓰레기의 변신! ♻️✨ 바나나 껍질이 꽃들에게 훌륭한 영양식이 돼요!"
+                },
+                details: {
+                    en: "Composting naturally breaks down organic waste using microbes. It prevents food from rotting in landfills (which creates methane gas) and restores rich minerals back into garden soil.",
+                    id: "Mengompos menguraikan sampah organik secara alami. Ini mencegah gas metana di TPA dan mengembalikan mineral kaya ke tanah berkebun.",
+                    zh: "堆肥利用微生物自然分解有机废物。这不仅能减少垃圾填埋场爆发高温甲烷气体，还能让丰富的矿物质重返土壤！",
+                    ko: "퇴비화는 미생물을 이용해 유기물 쓰레기를 자연 분해합니다. 매립지 온실가스를 줄이고 흙에 풍부한 영양을 돌려줘요!"
+                }
+            },
+            {
+                id: 9,
+                icon: "🐬",
+                category: "Ocean",
+                titles: { en: "Playful Dolphins", id: "Lumba-Lumba", zh: "聪明海豚", ko: "돌고래" },
+                facts: {
+                    en: "Dolphins give each other unique signature whistles — just like names!",
+                    id: "Lumba-lumba punya siulan unik untuk satu sama lain — persis seperti nama!",
+                    zh: "海豚会发出的独特“标志性哨音”，就跟人类的名字一模一样！",
+                    ko: "돌고래는 서로를 부를 때 사람의 이름처럼 고유한 휘파람 소리를 사용해요."
+                },
+                lumiSays: {
+                    en: "WAIT… WHAT?! 👀 Ocean buddies calling each other by names underwater?! So cute!",
+                    id: "EH… SERIUS?! 👀 Teman laut saling panggil nama di bawah air?! Gemas banget!",
+                    zh: "等等… 什么？！👀 海洋小小伙伴在水底下竟然互相叫名字？！这也太可爱了吧！",
+                    ko: "잠깐만… 뭐라고?! 👀 바닷속 친구들이 이름으로 서로를 부른다고요?! 정말 귀여워요!"
+                },
+                details: {
+                    en: "Each dolphin develops a distinct whistle sound within its first year. They use these sounds to call out to specific friends and recognize each other even after decades apart!",
+                    id: "Setiap lumba-lumba membuat bunyi siulan khas sejak bayi. Mereka memakainya untuk memanggil teman dan mengenali sesama walau berpisah lama!",
+                    zh: "每只海豚在出生第一年就会确立独一无二的哨音。即使分别数十年，它们也能凭哨音精准认出彼此！",
+                    ko: "모든 돌고래는 자라면서 자신만의 휘파람 소리를 만듭니다. 몇 십 년이 지나도 그 소리로 친구를 알아볼 수 있어요!"
+                }
+            },
+            {
+                id: 10,
+                icon: "🪸",
+                category: "Ocean",
+                titles: { en: "Coral Reefs", id: "Terumbu Karang", zh: "珊瑚礁", ko: "산호초" },
+                facts: {
+                    en: "Coral reefs cover less than 1% of the ocean floor, but harbor 25% of all marine life.",
+                    id: "Terumbu karang hanya 1% dasar laut, tapi rumah bagi 25% semua kehidupan laut.",
+                    zh: "珊瑚礁只占海底面积的不到1%，却是四分之一海洋生物的家园。",
+                    ko: "산호초는 바다 밑면의 1%도 안 되지만, 전체 해양 생물의 25%가 집으로 삼고 있어요."
+                },
+                lumiSays: {
+                    en: "WHOOOAA! 😳✨ Underwater bustling cities full of colorful fishy neighbors!",
+                    id: "WHOOOAA! 😳✨ Kota bawah laut yang ramai dan penuh ikan warna-warni!",
+                    zh: "哇哦哦哦！😳✨ 这简直就是色彩斑斓、住满了各种小鱼邻居的水下繁华大都市！",
+                    ko: "우와아아! 😳✨ 알록달록한 물고기 이웃들이 모여 사는 바닷속 대도시예요!"
+                },
+                details: {
+                    en: "Corals are actually tiny living animals, not plants or rocks! They build hard limestone homes that protect coastlines from storm waves and nurture fish nurseries.",
+                    id: "Karang sebenarnya hewan kecil, bukan batu! Mereka membangun rumah kapur pelindung pantai dan tempat tumbuh ikan muda.",
+                    zh: "珊瑚实际上是微小的动物，而不是植物或石头！它们建造的石灰石城堡能保护海岸线免受风浪侵蚀，更是幼鱼的避风港。",
+                    ko: "산호는 바위나 식물이 아니라 아주 작은 동물입니다! 이들이 만드는 단단한 집은 해안을 지켜주고 아기 물고기를 키워줘요."
+                }
+            }
+        ];
+
+        /* Additional facts (Shortened data generation for cards 11 to 26) */
+        const categoryList = ["Trees", "Plants", "Animals", "Ocean", "Climate", "Sustainability", "Fungi"];
+        const extraIcons = ["🐧", "🌸", "☀️", "💧", "🌲", "🪴", "🐼", "🪰", "🌾", "🎋", "⚡", "🌋", "🦭", "🪷", "🦩", "🍁"];
+        
+        for (let i = 11; i <= 26; i++) {
+            const cat = categoryList[i % categoryList.length];
+            const icon = extraIcons[(i - 11) % extraIcons.length];
+            factsDatabase.push({
+                id: i,
+                icon: icon,
+                category: cat,
+                titles: {
+                    en: `Nature Wonder #${i}`,
+                    id: `Keajaiban Alam #${i}`,
+                    zh: `自然奇观 #${i}`,
+                    ko: `자연의 신비 #${i}`
+                },
+                facts: {
+                    en: `Eco fact #${i}: Earth has incredible natural cycles that keep air and water clean.`,
+                    id: `Fakta alam #${i}: Bumi punya siklus alami luar biasa untuk menjaga udara & air tetap bersih.`,
+                    zh: `环保小知识 #${i}：地球拥有神奇的自然循环，时刻维持空气与水源的洁净。`,
+                    ko: `자연 사실 #${i}: 지구는 공기와 물을 깨끗하게 유지하는 놀라운 자정 작용을 합니다.`
+                },
+                lumiSays: {
+                    en: `Awww, nature is adorable! 🥹 Look how smart our Earth is!`,
+                    id: `Awww, alam itu menggemaskan! 🥹 Lihat betapa pintarnya Bumi kita!`,
+                    zh: "哇，大自然太可亲啦！🥹 看我们的地球多聪明！",
+                    ko: "아우, 자연은 정말 사랑스러워요! 🥹 지구는 참 똑똑하죠!"
+                },
+                details: {
+                    en: `Every small creature and plant plays a crucial role in maintaining ecological balance across the globe!`,
+                    id: `Setiap makhluk kecil dan tanaman punya peran penting menjaga keseimbangan ekosistem global!`,
+                    zh: "每一个微小的生物和植物，都在维持全球生态平衡中发挥着至关重要的作用！",
+                    ko: "모든 작은 생물과 식물은 지구의 생태계 균형을 유지하는 데 꼭 필요한 역할을 합니다!"
+                }
+            });
+        }
+
+        const greenActionsData = [
+            { id: 1, icon: "💡", title: "Switch off idle lights", xp: 10 },
+            { id: 2, icon: "🥤", title: "Use reusable water bottle", xp: 15 },
+            { id: 3, icon: "🚮", title: "Pick up 3 pieces of trash", xp: 20 },
+            { id: 4, icon: "🪴", title: "Water a garden or plant", xp: 15 }
+        ];
+
+        function removeEmojis(text) {
+            return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+        }
+
+        // Selected best child-like / high-pitch character voice per language
+        function getLumiBestVoice(langCode) {
+            if (!availableVoices || availableVoices.length === 0) {
+                loadVoices();
+            }
+            const langPrefix = langCode.split('-')[0];
+            const matchingVoices = availableVoices.filter(v => v.lang.startsWith(langPrefix) || v.lang.replace('_', '-').startsWith(langPrefix));
+
+            if (matchingVoices.length === 0) return null;
+
+            // Prioritize female / child / bright voices
+            const preferredKeywords = ['child', 'girl', 'cute', 'samantha', 'victoria', 'karen', 'zira', 'kyoko', 'ting-ting', 'yuri', 'google'];
+            for (let key of preferredKeywords) {
+                const found = matchingVoices.find(v => v.name.toLowerCase().includes(key));
+                if (found) return found;
+            }
+
+            return matchingVoices[0];
+        }
+
+        // LUMI'S CUTE CHILD-LIKE EXPRESSIVE VOICE ENGINE
+        function speakText(text, onEndCallback) {
+            if (!('speechSynthesis' in window)) {
+                alert(i18n[currentLang].noVoiceMsg);
+                return;
+            }
+
+            window.speechSynthesis.cancel(); // Stop any previous speech
+            
+            const langMap = { en: 'en-US', id: 'id-ID', zh: 'zh-CN', ko: 'ko-KR' };
+            const targetLang = langMap[currentLang] || 'en-US';
+
+            // Clean text while preserving character expressions
+            let cleanString = removeEmojis(text).trim();
+
+            // Detect Emotional Context for Dynamic Voice Pitch & Rate Modulation
+            let basePitch = 1.65; // High chirpy pitch for cute child character
+            let baseRate = 1.05;   // Bright, cheerful pace
+
+            const upperText = cleanString.toUpperCase();
+
+            // Excited / Surprised Jump
+            if (upperText.includes('WAAAH') || upperText.includes('WHOA') || upperText.includes('YAY') || upperText.includes('REALLY') || upperText.includes('!') || upperText.includes('😳')) {
+                basePitch = 1.82; // Extra squeaky / high jump!
+                baseRate = 1.12;  // Energetic & bouncy
+            } 
+            // Playful / Soft Whispering
+            else if (upperText.includes('PSST') || upperText.includes('EHEHE') || upperText.includes('AWWW') || upperText.includes('…')) {
+                basePitch = 1.58; // Soft & tiny cute girl tone
+                baseRate = 0.95;  // Gentle & playful
+            }
+
+            const utterance = new SpeechSynthesisUtterance(cleanString);
+            utterance.lang = targetLang;
+            utterance.pitch = basePitch;
+            utterance.rate = baseRate;
+
+            const chosenVoice = getLumiBestVoice(targetLang);
+            if (chosenVoice) {
+                utterance.voice = chosenVoice;
+            }
+
+            // Visual feedback: Mascot reaction + Mouth Animation
+            utterance.onstart = () => {
+                isSpeaking = true;
+                setLumiMouthTalking(true);
+                triggerLumiJoy();
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                setLumiMouthTalking(false);
+                if (onEndCallback) onEndCallback();
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                setLumiMouthTalking(false);
+            };
+
+            activeUtterance = utterance;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Quick Soundboard Auditions for Lumi's Cute Expressions
+        function auditionLumiVoice(phraseKey) {
+            const phrases = {
+                en: {
+                    waaah: "Waaah! Look at that super cool pine tree!",
+                    ehehe: "Ehehe… I love our beautiful planet Earth!",
+                    psst: "Psst… come explore nature with me!",
+                    yay: "Yayyy! You did a great job today!"
+                },
+                id: {
+                    waaah: "Waaah! Lihat pohon pinus yang keren banget itu!",
+                    ehehe: "Ehehe… aku sayang banget sama Bumi kita!",
+                    psst: "Psst… yuk petualangan alam bersamaku!",
+                    yay: "Yayyy! Kamu hebat banget hari ini!"
+                },
+                zh: {
+                    waaah: "哇啊！快看那棵超级酷的松树！",
+                    ehehe: "哼哼… 我最喜欢我们美丽的地球啦！",
+                    psst: "嘘… 快和我一起去探索大自然吧！",
+                    yay: "太棒啦！你今天做得非常好哦！"
+                },
+                ko: {
+                    waaah: "우와아! 저 신기한 소나무 좀 봐!",
+                    ehehe: "에헤헤… 나는 우리 지구가 정말 좋아!",
+                    psst: "쉿… 나와 함께 자연을 탐험하러 가자!",
+                    yay: "야호! 오늘 정말 잘했어!"
+                }
+            };
+
+            const langPhrases = phrases[currentLang] || phrases.en;
+            const textToSay = langPhrases[phraseKey] || "Hi! I’m Lumi!";
+            
+            // Show cute speech bubble update
+            document.getElementById('lumi-speech-text').innerText = textToSay;
+            speakText(textToSay);
+        }
+
+        function setLumiMouthTalking(talking) {
+            const mouth = document.getElementById('lumi-mouth');
+            if (!mouth) return;
+            if (talking) {
+                mouth.setAttribute('d', 'M94 121 Q100 132 106 121'); // Open wider talking mouth
+            } else {
+                mouth.setAttribute('d', 'M94 121 Q100 126 106 121'); // Smile mouth
+            }
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = '';
+
+            const filtered = factsDatabase.filter(f => activeCategory === 'All' || f.category === activeCategory);
+
+            filtered.forEach(fact => {
+                const isSaved = savedFactIds.includes(fact.id);
+                const cardEl = document.createElement('div');
+                cardEl.className = 'perspective-1000 h-72 cursor-pointer group';
+                
+                cardEl.innerHTML = `
+                    <div id="card-inner-${fact.id}" class="card-inner relative w-full h-full transform-style-3d duration-500 rounded-3xl shadow-cute-card hover:shadow-xl transition-shadow">
+                        <!-- FRONT OF CARD -->
+                        <div class="absolute inset-0 w-full h-full bg-white border-2 border-green-100 rounded-3xl p-6 flex flex-col justify-between items-center text-center backface-hidden group-hover:border-lumi-neon transition-colors" onclick="flipCard(${fact.id})">
+                            <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-lumi-mint text-emerald-800 border border-green-200">
+                                ${fact.category}
+                            </span>
+                            <div class="my-auto space-y-2">
+                                <span class="text-6xl block transform group-hover:scale-110 transition-transform">${fact.icon}</span>
+                                <h4 class="text-xl font-extrabold text-lumi-darkgreen">${fact.titles[currentLang]}</h4>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-700/60 flex items-center space-x-1">
+                                <span>Tap to flip</span>
+                                <i class="fa-solid fa-rotate text-[10px]"></i>
+                            </span>
+                        </div>
+
+                        <!-- BACK OF CARD -->
+                        <div class="absolute inset-0 w-full h-full bg-gradient-to-b from-lumi-mint via-white to-lumi-softbg border-2 border-lumi-neon rounded-3xl p-5 flex flex-col justify-between rotate-y-180 backface-hidden">
+                            <div class="space-y-2 text-left">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl">${fact.icon}</span>
+                                    <button onclick="event.stopPropagation(); toggleSaveFact(${fact.id})" class="text-rose-500 hover:scale-125 transition">
+                                        <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart text-lg"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm font-extrabold text-emerald-950 leading-snug">
+                                    “${fact.facts[currentLang]}”
+                                </p>
+                            </div>
+
+                            <!-- Lumi Comment -->
+                            <div class="bg-white/90 p-2.5 rounded-2xl border border-green-200 text-xs text-left flex items-start space-x-2">
+                                <span class="text-base">💚</span>
+                                <p class="font-bold text-lumi-darkgreen line-clamp-2">${fact.lumiSays[currentLang]}</p>
+                            </div>
+
+                            <!-- Card Bottom Controls -->
+                            <div class="flex items-center justify-between pt-1 border-t border-green-100 text-xs">
+                                <button onclick="event.stopPropagation(); speakCardFact(${fact.id})" class="text-emerald-800 font-extrabold flex items-center space-x-1 hover:text-emerald-600">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                    <span>Listen</span>
+                                </button>
+                                <button onclick="event.stopPropagation(); openDetailModal(${fact.id})" class="text-lumi-darkgreen font-extrabold bg-lumi-neon/40 px-2.5 py-1 rounded-full hover:bg-lumi-neon transition">
+                                    Tell Me More 🌱
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function flipCard(id) {
+            const cardInner = document.getElementById(`card-inner-${id}`);
+            if (cardInner) {
+                cardInner.parentElement.classList.toggle('flipped');
+            }
+        }
+
+        function selectCategory(cat) {
+            filterCategory(cat);
+            scrollToSection('flashcards-section');
+        }
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = "cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-lumi-darkgreen text-white shadow-sm";
+                } else {
+                    btn.className = "cat-btn px-4 py-2 rounded-2xl text-sm font-extrabold whitespace-nowrap transition bg-white text-emerald-800 border border-green-200 hover:bg-lumi-mint";
+                }
+            });
+            renderCards();
+        }
+
+        function renderDailyFact() {
+            const fact = factsDatabase.find(f => f.id === currentDailyFactId) || factsDatabase[0];
+            document.getElementById('daily-card-icon').innerText = fact.icon;
+            document.getElementById('daily-card-category').innerText = fact.category;
+            document.getElementById('daily-card-title').innerText = fact.titles[currentLang];
+            document.getElementById('daily-card-fact').innerText = `“${fact.facts[currentLang]}”`;
+            document.getElementById('daily-lumi-says').innerText = fact.lumiSays[currentLang];
+
+            const isSaved = savedFactIds.includes(fact.id);
+            document.getElementById('daily-save-icon').className = isSaved ? "fa-solid fa-heart" : "fa-regular fa-heart";
+            document.getElementById('daily-save-label').innerText = isSaved ? i18n[currentLang].savedBtn : i18n[currentLang].saveBtn;
+        }
+
+        function pickRandomDiscovery() {
+            triggerLumiJoy();
+            let newId;
+            do {
+                newId = Math.floor(Math.random() * factsDatabase.length) + 1;
+            } while (newId === currentDailyFactId && factsDatabase.length > 1);
+
+            currentDailyFactId = newId;
+            renderDailyFact();
+        }
+
+        function speakDailyFact() {
+            const fact = factsDatabase.find(f => f.id === currentDailyFactId);
+            if (fact) speakText(fact.lumiSays[currentLang]);
+        }
+
+        function speakCardFact(id) {
+            const fact = factsDatabase.find(f => f.id === id);
+            if (fact) speakText(fact.lumiSays[currentLang]);
+        }
+
+        function toggleSaveDaily() {
+            toggleSaveFact(currentDailyFactId);
+            renderDailyFact();
+        }
+
+        function toggleSaveFact(id) {
+            if (savedFactIds.includes(id)) {
+                savedFactIds = savedFactIds.filter(i => i !== id);
+            } else {
+                savedFactIds.push(id);
+            }
+            localStorage.setItem('lumi_saved_facts', JSON.stringify(savedFactIds));
+            updateSavedBadge();
+            renderCards();
+        }
+
+        function updateSavedBadge() {
+            document.getElementById('saved-count-badge').innerText = savedFactIds.length;
+        }
+
+        function openDetailModalFromDaily() {
+            openDetailModal(currentDailyFactId);
+        }
+
+        function openDetailModal(id) {
+            currentModalFactId = id;
+            const fact = factsDatabase.find(f => f.id === id);
+            if (!fact) return;
+
+            document.getElementById('modal-icon').innerText = fact.icon;
+            document.getElementById('modal-category').innerText = fact.category;
+            document.getElementById('modal-title').innerText = fact.titles[currentLang];
+            document.getElementById('modal-explanation').innerText = fact.details[currentLang];
+            document.getElementById('modal-lumi-says').innerText = fact.lumiSays[currentLang];
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        function speakModalFact() {
+            const fact = factsDatabase.find(f => f.id === currentModalFactId);
+            if (fact) speakText(fact.details[currentLang]);
+        }
+
+        function toggleSavedCardsModal() {
+            const modal = document.getElementById('saved-modal');
+            modal.classList.toggle('hidden');
+
+            if (!modal.classList.contains('hidden')) {
+                const list = document.getElementById('saved-cards-list');
+                list.innerHTML = '';
+
+                if (savedFactIds.length === 0) {
+                    list.innerHTML = `<p class="text-center text-gray-500 py-8 font-bold">No saved cards yet! Tap ♡ to save facts. 🌱</p>`;
+                    return;
+                }
+
+                savedFactIds.forEach(id => {
+                    const fact = factsDatabase.find(f => f.id === id);
+                    if (!fact) return;
+
+                    const item = document.createElement('div');
+                    item.className = "p-4 rounded-2xl bg-lumi-softbg border border-green-200 flex items-center justify-between";
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="text-3xl">${fact.icon}</span>
+                            <div>
+                                <h5 class="font-extrabold text-lumi-darkgreen">${fact.titles[currentLang]}</h5>
+                                <p class="text-xs font-semibold text-emerald-800">${fact.facts[currentLang]}</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleSaveFact(${fact.id}); toggleSavedCardsModal();" class="text-rose-500 hover:text-rose-700 font-bold text-sm">
+                            Remove
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+        }
+
+        function renderGreenActions() {
+            const container = document.getElementById('green-actions-grid');
+            container.innerHTML = '';
+
+            greenActionsData.forEach(action => {
+                const actionCard = document.createElement('div');
+                actionCard.className = "p-4 rounded-2xl bg-white border border-green-200 flex items-center space-x-3 shadow-sm hover:border-lumi-neon transition";
+                actionCard.innerHTML = `
+                    <input type="checkbox" onchange="onActionChecked(this)" class="w-5 h-5 accent-emerald-500 rounded-lg cursor-pointer">
+                    <span class="text-2xl">${action.icon}</span>
+                    <div>
+                        <div class="text-sm font-extrabold text-lumi-darkgreen">${action.title}</div>
+                        <div class="text-[11px] font-bold text-emerald-600">+${action.xp} Eco Points</div>
+                    </div>
+                `;
+                container.appendChild(actionCard);
+            });
+        }
+
+        function onActionChecked(checkbox) {
+            if (checkbox.checked) {
+                triggerLumiJoy();
+                document.getElementById('badge-level').innerText = "Earth Protector 🌿";
+            }
+        }
+
+        function toggleChatWindow() {
+            document.getElementById('chat-window').classList.toggle('hidden');
+        }
+
+        function openChatWithPrompt(prompt) {
+            document.getElementById('chat-window').classList.remove('hidden');
+            if (prompt) {
+                document.getElementById('chat-input').value = prompt;
+            }
+        }
+
+        function sendQuickQuestion(cat) {
+            openChatWithPrompt(`Tell me something cool about ${cat}!`);
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const userMsg = input.value.trim();
+            if (!userMsg) return;
+
+            appendChatMessage('user', userMsg);
+            input.value = '';
+
+            // Generate Lumi Response
+            setTimeout(() => {
+                const lumiReply = generateLumiResponse(userMsg);
+                appendChatMessage('lumi', lumiReply);
+            }, 600);
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const msgBubble = document.createElement('div');
+            
+            if (sender === 'user') {
+                msgBubble.className = "flex justify-end";
+                msgBubble.innerHTML = `
+                    <div class="bg-lumi-darkgreen text-white px-4 py-2.5 rounded-2xl rounded-tr-none max-w-[80%] font-semibold shadow-sm">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                msgBubble.className = "flex items-start space-x-2";
+                msgBubble.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-lumi-neon flex items-center justify-center text-sm shadow-sm flex-shrink-0">🌱</div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-green-200 text-lumi-darkgreen font-semibold space-y-2 max-w-[85%] shadow-sm">
+                        <p>${text}</p>
+                        <button onclick="speakText('${text.replace(/'/g, "\\'")}')" class="text-xs text-emerald-700 font-extrabold flex items-center space-x-1 hover:text-emerald-900">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>Listen</span>
+                        </button>
+                    </div>
+                `;
+            }
+            container.appendChild(msgBubble);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function generateLumiResponse(query) {
+            const q = query.toLowerCase();
+            if (q.includes('tree') || q.includes('forest')) {
+                return "Trees are like Earth's air purifiers! 🌳 They give us oxygen, cool down cities, and shelter cute birds!";
+            } else if (q.includes('ocean') || q.includes('water') || q.includes('sea')) {
+                return "The ocean covers over 70% of Earth! 🌊 It's full of mysterious creatures, coral reefs, and produces half our oxygen!";
+            } else if (q.includes('bee') || q.includes('animal') || q.includes('bug')) {
+                return "Animals are amazing helpers! 🐝 Bees pollinate flowers so we can enjoy fruits, berries, and vegetables!";
+            } else if (q.includes('net zero') || q.includes('climate')) {
+                return "Net zero means balancing the greenhouse gases we produce with what Earth absorbs! 🌎💚";
+            } else {
+                return "That's a super cool question! 🌸 Nature has so many secrets. Keep exploring flashcards with me to learn more!";
+            }
+        }
+
+        function toggleLangMenu() {
+            document.getElementById('lang-menu').classList.toggle('hidden');
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const flags = { en: '🇬🇧', id: '🇮🇩', zh: '🇨🇳', ko: '🇰🇷' };
+            document.getElementById('current-lang-flag').innerText = flags[lang];
+            document.getElementById('current-lang-code').innerText = lang;
+            document.getElementById('lang-menu').classList.add('hidden');
+
+            updateUILanguage();
+            renderDailyFact();
+            renderCards();
+        }
+
+        function updateUILanguage() {
+            const data = i18n[currentLang];
+            document.getElementById('hero-tagline').innerText = data.tagline;
+            document.getElementById('hero-headline').innerText = data.headline;
+            document.getElementById('hero-subtitle').innerText = data.subtitle;
+            document.getElementById('lumi-speech-text').innerText = data.speechBubble;
+            document.getElementById('daily-discovery-title').innerText = data.dailyTitle;
+            document.getElementById('surprise-btn-label').innerText = data.surpriseBtn;
+            document.getElementById('daily-listen-label').innerText = data.listenBtn;
+            document.getElementById('gallery-title').innerText = data.galleryTitle;
+            document.getElementById('gallery-subtitle').innerText = data.gallerySubtitle;
+            document.getElementById('actions-title').innerText = data.actionsTitle;
+            document.getElementById('actions-subtitle').innerText = data.actionsSubtitle;
+
+            // Update chat welcome message
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';
+            appendChatMessage('lumi', data.chatWelcome);
+        }
+
+        function triggerLumiJoy() {
+            const lumi = document.getElementById('lumi-character-wrapper');
+            lumi.classList.add('scale-125', '-translate-y-4');
+            setTimeout(() => {
+                lumi.classList.remove('scale-125', '-translate-y-4');
+            }, 300);
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            updateSavedBadge();
+            updateUILanguage();
+            renderDailyFact();
+            renderCards();
+            renderGreenActions();
+        }
+    </script>
+</body>
+</html>
